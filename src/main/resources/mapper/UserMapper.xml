@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.szht.mapper.UserMapper">
+
+    <resultMap id="UserMap" type="com.szht.entity.User">
+        <result column="YGBH" jdbcType="VARCHAR" property="ygbh" />
+        <result column="YGMM" jdbcType="VARCHAR" property="ygmm" />
+        <result column="YGMC" jdbcType="VARCHAR" property="ygmc" />
+        <result column="BMBH" jdbcType="VARCHAR" property="bmbh" />
+        <result column="ISXT" jdbcType="VARCHAR" property="isxt" />
+        <result column="LXDH" jdbcType="VARCHAR" property="lxdh" />
+        <result column="LB" jdbcType="VARCHAR" property="lb" />
+        <result column="ZT" jdbcType="VARCHAR" property="zt" />
+        <result column="XB" jdbcType="VARCHAR" property="xb" />
+        <result column="EMAIL" jdbcType="VARCHAR" property="email" />
+        <result column="SFKY" jdbcType="VARCHAR" property="sfky" />
+        <result column="BZ" jdbcType="VARCHAR" property="bz" />
+        <result column="JXRQ" jdbcType="VARCHAR" property="jxrq" />
+        <result column="CSRQ" jdbcType="VARCHAR" property="csrq" />
+        <result column="ZC" jdbcType="VARCHAR" property="zc" />
+        <result column="XL" jdbcType="VARCHAR" property="xl" />
+        <result column="BMMC" jdbcType="VARCHAR" property="bmmc" />
+        <result column="QMYZ" jdbcType="BLOB" property="qmyz" />
+        <result column="QMMM" jdbcType="BLOB" property="qmmm" />
+        <result column="SZQZ" jdbcType="VARCHAR" property="szqz" />
+        <result column="CFCA" jdbcType="VARCHAR" property="cfca" />
+        <result column="DN" jdbcType="VARCHAR" property="dn" />
+        <result column="SIGNATURE" jdbcType="BLOB" property="signature" />
+        <result column="QZMM" jdbcType="VARCHAR" property="qzmm" />
+        <result column="QZGL" jdbcType="VARCHAR" property="qzgl" />
+        <result column="SFSCDL" jdbcType="VARCHAR" property="sfscdl" />
+        <result column="WXBH" jdbcType="VARCHAR" property="wxbh" />
+        <result column="SFQZ" jdbcType="VARCHAR" property="sfqz" />
+        <result column="MPOPENID" jdbcType="VARCHAR" property="mpOpenId" />
+        <result column="CATIME" jdbcType="VARCHAR" property="catime" />
+        <result column="MOBILE_NUM" jdbcType="VARCHAR" property="mobileNum" />
+        <result column="SFQM" jdbcType="VARCHAR" property="sfqm" />
+        <result column="USERID" jdbcType="VARCHAR" property="userId" />
+    </resultMap>
+
+    <!-- 查询所有人员 -->
+    <select id="getAllUsers" resultType="com.szht.entity.User">
+        select * from dm_rydm
+    </select>
+
+    <select id="queryUserByYgbh" resultMap="UserMap">
+        select * from dm_rydm where ygbh = #{ygbh}
+    </select>
+
+</mapper>

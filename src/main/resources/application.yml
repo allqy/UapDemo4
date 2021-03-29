@@ -1,0 +1,23 @@
+server:
+  port: 8081
+  session:
+    timeout: 30
+
+spring:
+  datasource:
+    url: jdbc:oracle:thin:@127.0.0.1:1521:orcl
+    username: UAP
+    password: UAP
+    #使用druid数据源
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: oracle.jdbc.driver.OracleDriver
+
+mybatis:
+  mapper-locations: classpath:mapper/*Mapper.xml
+  type-aliases-package: com.szht.entity
+
+
+#验证码图片属性
+validate:
+  width: 200
+  height: 80
