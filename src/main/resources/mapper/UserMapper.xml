@@ -47,4 +47,8 @@
         select * from dm_rydm where ygbh = #{ygbh}
     </select>
 
+    <select id="queryUserByYgbhAndPwd" resultMap="UserMap">
+        select * from dm_rydm where ygbh = #{ygbh,jdbcType=VARCHAR} and ygmm = #{ygmm,jdbcType=VARCHAR}
+    </select>
+
 </mapper>

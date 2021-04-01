@@ -13,17 +13,17 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/list")
-    public ResponseEntity getAllUsers(){
+    public ResponseEntity getAllUsers() throws Exception {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @GetMapping("/{ygbh}")
-    public ResponseEntity getUserByYgbh(@PathVariable String ygbh){
+    public ResponseEntity getUserByYgbh(@PathVariable String ygbh) throws Exception {
         return ResponseEntity.ok(userService.queryUserByYgbh(ygbh));
     }
 
     @GetMapping
-    public ResponseEntity getUserByYgbh1(@RequestParam(value = "ygbh")String ygbh){
+    public ResponseEntity getUserByYgbh1(@RequestParam(value = "ygbh")String ygbh) throws Exception {
         return ResponseEntity.ok(userService.queryUserByYgbh(ygbh));
     }
 }
