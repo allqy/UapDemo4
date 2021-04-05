@@ -1,9 +1,8 @@
 server:
   port: 8081
-  session:
-    timeout: 30
 
 spring:
+  #数据源配置
   datasource:
     url: jdbc:oracle:thin:@127.0.0.1:1521:orcl
     username: UAP
@@ -12,12 +11,20 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: oracle.jdbc.driver.OracleDriver
 
+  #redis配置
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password:
+
+
 mybatis:
   mapper-locations: classpath:mapper/*Mapper.xml
   type-aliases-package: com.szht.entity
 
+uap:
+  jwt:
+    secret: f4e2e52034348f86b67cde581c0f9eb5 #jwt生成token密钥
+    expire: 1000 #过期时间
 
-#验证码图片属性
-validate:
-  width: 200
-  height: 80
+
