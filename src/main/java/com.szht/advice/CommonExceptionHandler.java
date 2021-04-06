@@ -3,7 +3,6 @@ package com.szht.advice;
 import com.szht.enums.ExceptionEnum;
 import com.szht.exceptions.MyException;
 import com.szht.responseEntity.ExceptionResult;
-import com.szht.service.impl.LoginServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

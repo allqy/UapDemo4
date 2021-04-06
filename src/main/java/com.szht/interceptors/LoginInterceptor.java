@@ -1,6 +1,9 @@
 package com.szht.interceptors;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.exceptions.AlgorithmMismatchException;
+import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.szht.enums.ExceptionEnum;
 import com.szht.exceptions.MyException;
 import com.szht.utils.JwtUtil;
@@ -56,56 +59,49 @@ public class LoginInterceptor implements HandlerInterceptor {
             throw new MyException(ExceptionEnum.NO_PERMISSION_ERROR);
         } else {
             try {
-                DecodedJWT verify = jwtUtil.verify(token);
+                jwtUtil.verify(token);
                 //获取用户id
-                String userId = jwtUtil.getUsername(token, "id");
+                String ygbh = jwtUtil.getUsername(token, "ygbh");
                 //判断token是否和redis一样  不一样 说明用户多次登录并且使用之前的token登录  应该提示用户使用最新的token
                 //如果用户的过去时间已经过去一半 将新的token放在响应头和redis中 前端刷新token
-                String tokenRedis = (String) redisUtil.get("uid" + userId);
+                String tokenRedis = (String) redisUtil.get("uap_ygbh" + ygbh);
                 if (token.equals(tokenRedis)) {
                     //token符合要求
-                    long expireUidTimeRedis = redisUtil.getExpire("uid" + userId);
+                    long expireUidTimeRedis = redisUtil.getExpire("uap_ygbh" + ygbh);
                     log.info("expireUidTimeRedis={}", expireUidTimeRedis);
                     if (expire / 2 > expireUidTimeRedis) {
                         //刷新token
                         HashMap<String, String> usergMap = new HashMap<>();
-                        usergMap.put("id", userId);
-                        usergMap.put("nickname", jwtUtil.getUsername(token, "nickname"));
-                        usergMap.put("username", jwtUtil.getUsername(token, "username"));
+                        usergMap.put("ygbh", ygbh);
+                        usergMap.put("ygmc", jwtUtil.getUsername(token, "ygmc"));
                         //时间少于设置时间的一般 刷新token
                         String newToken = jwtUtil.getToken(usergMap);
                         log.info("刷新token成功={}", newToken);
-                        redisUtil.set("uid" + userId, newToken, expire);
+                        redisUtil.set("uap_ygbh" + ygbh, newToken, expire);
                         response.setHeader("token", newToken);
                         //默认浏览器只会显示部分响应头  这个是暴露响应头为token的键值
                         response.setHeader("Access-Control-Expose-Headers", "token");
                     }
                     return true;
                 }
-
-                //和redis的token不一致 说明用户使用了旧的并且没有过期的token 提示使用最新的
-                data = Result.error(StaticConstant.CODE_400, "无效凭证，请退出重试或者使用最新的凭证").put("data", null);
+                throw new MyException(ExceptionEnum.TOKEN_NEED_REFRESH);
             } catch (SignatureVerificationException | JWTDecodeException e) {
                 //无效的token
                 log.info("token=" + token + "无效 错误token");
                 log.info("解密Token中的公共信息出现JWTDecodeException异常:" + e.getMessage());
-                data = Result.error(StaticConstant.CODE_400, "无效凭证，请重新登录").put("data", null);
+                throw new MyException(ExceptionEnum.INVALID_TOKEN);
             } catch (TokenExpiredException e) {
                 log.info("token=" + token + "过期");
-                data = Result.error(StaticConstant.CODE_400, "登录以过期，请重新登录").put("data", null);
+                throw new MyException(ExceptionEnum.TOKEN_EXPIRED);
             } catch (AlgorithmMismatchException e) {
                 log.info("token=" + token + "算法不一致");
-                data = Result.error(StaticConstant.CODE_500, "服务器异常,请退出重试").put("data", null);
+                throw new MyException(ExceptionEnum.SYSTEM_INTERNAL_ERROR);
             } catch (Exception e) {
                 e.printStackTrace();
                 log.info("token=" + token + "解析token异常");
-                data = Result.error(StaticConstant.CODE_500, "服务器异常,请退出重试").put("data", null);
+                throw new MyException(ExceptionEnum.SYSTEM_INTERNAL_ERROR);
             }
         }
-        response.setContentType("application/json;charset=utf-8");
-        String msgJson = new ObjectMapper().writeValueAsString(data);
-        response.getWriter().write(msgJson);
-        return false;
     }
 
     public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, ModelAndView modelAndView) throws Exception {
