@@ -13,8 +13,8 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/list")
-    public ResponseEntity getAllUsers() throws Exception {
-        return ResponseEntity.ok(userService.getAllUsers());
+    public ResponseEntity getAllUsers(@RequestParam(value="pageIndex",required = true,defaultValue = "1") int pageIndex, @RequestParam(value="pageSize",defaultValue = "10") int pageSize) throws Exception {
+        return ResponseEntity.ok(userService.getAllUsers(pageIndex,pageSize));
     }
 
     @GetMapping("/{ygbh}")

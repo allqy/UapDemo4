@@ -22,6 +22,13 @@ mybatis:
   mapper-locations: classpath:mapper/*Mapper.xml
   type-aliases-package: com.szht.entity
 
+# 配置pagehelper参数
+pagehelper:
+  helperDialect: oracle
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
+
 uap:
   jwt:
     secret: f4e2e52034348f86b67cde581c0f9eb5 #jwt生成token密钥

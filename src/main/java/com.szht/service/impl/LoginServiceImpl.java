@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,7 +41,7 @@ public class LoginServiceImpl implements LoginService {
      * @param user
      * @return
      */
-    public ResponseEntity login(User user) throws Exception {
+    public ResponseEntity login(User user,HttpServletResponse response) throws Exception {
         if(user==null || StringUtils.isBlank(user.getYgbh()) || StringUtils.isBlank(user.getYgmm())){
             log.info("登录验证方法参数user不能为空");
             throw new MyException(ExceptionEnum.PARAMS_NOT_MATCH);
@@ -67,6 +68,9 @@ public class LoginServiceImpl implements LoginService {
             redisUtil.set("uap_ygbh" + user2.getYgbh(), token,expire);
         }
         //如果redis的token不为空
+        response.setHeader("token", token);
+        //默认浏览器只会显示部分响应头  这个是暴露响应头为token的键值
+        response.setHeader("Access-Control-Expose-Headers", "token");
         return ResponseEntity.ok(user2);
     }
 }

@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+
 @RestController
 @CrossOrigin
 public class LoginController {
@@ -14,7 +16,7 @@ public class LoginController {
     private LoginService loginService;
 
     @PostMapping("/login")
-    public ResponseEntity testLogin(@RequestBody User user) throws Exception {
-        return ResponseEntity.ok(loginService.login(user));
+    public ResponseEntity testLogin(@RequestBody User user,HttpServletResponse response) throws Exception {
+        return ResponseEntity.ok(loginService.login(user,response));
     }
 }

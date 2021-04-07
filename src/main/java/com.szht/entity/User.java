@@ -35,6 +35,7 @@ public class User {
     private byte[] signature;
     private String qzmm;
     private String qzgl;
+    private String qzglStr;
     private String sfscdl;
     private String wxbh;
     private String sfqz;
@@ -43,4 +44,13 @@ public class User {
     private String mobileNum;
     private String sfqm;
     private String userId;
+
+    public String getQzglStr() {
+        if("1".equals(qzgl)){
+            this.qzglStr = "是";
+        }else{
+            this.qzglStr = "否";
+        }
+        return this.qzglStr;
+    }
 }
