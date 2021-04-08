@@ -49,26 +49,27 @@ public class LoginInterceptor implements HandlerInterceptor {
         response.setHeader("Access-Control-Allow-Credentials", "true");
         //设置跨域响应头
         response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, token, Authorization");
+        if ("OPTIONS".equals(request.getMethod())) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            return true;
+        }
         /**
          * 判断token是否正确 以及失效
          */
         String token = request.getHeader("Authorization");
-        log.info("token={}",token);
-        //Result data = null;
         if (StringUtils.isEmpty(token)) {
+            log.info("获取token为空！！！");
             throw new MyException(ExceptionEnum.NO_PERMISSION_ERROR);
         } else {
             try {
                 jwtUtil.verify(token);
                 //获取用户id
                 String ygbh = jwtUtil.getUsername(token, "ygbh");
-                //判断token是否和redis一样  不一样 说明用户多次登录并且使用之前的token登录  应该提示用户使用最新的token
                 //如果用户的过去时间已经过去一半 将新的token放在响应头和redis中 前端刷新token
-                String tokenRedis = (String) redisUtil.get("uap_ygbh" + ygbh);
+                String tokenRedis = (String) redisUtil.get("uap_ygbh_" + ygbh);
                 if (token.equals(tokenRedis)) {
                     //token符合要求
-                    long expireUidTimeRedis = redisUtil.getExpire("uap_ygbh" + ygbh);
-                    log.info("expireUidTimeRedis={}", expireUidTimeRedis);
+                    long expireUidTimeRedis = redisUtil.getExpire("uap_ygbh_" + ygbh);
                     if (expire / 2 > expireUidTimeRedis) {
                         //刷新token
                         HashMap<String, String> usergMap = new HashMap<>();
@@ -76,8 +77,7 @@ public class LoginInterceptor implements HandlerInterceptor {
                         usergMap.put("ygmc", jwtUtil.getUsername(token, "ygmc"));
                         //时间少于设置时间的一般 刷新token
                         String newToken = jwtUtil.getToken(usergMap);
-                        log.info("刷新token成功={}", newToken);
-                        redisUtil.set("uap_ygbh" + ygbh, newToken, expire);
+                        redisUtil.set("uap_ygbh_" + ygbh, newToken, expire);
                         response.setHeader("token", newToken);
                         //默认浏览器只会显示部分响应头  这个是暴露响应头为token的键值
                         response.setHeader("Access-Control-Expose-Headers", "token");
@@ -87,18 +87,13 @@ public class LoginInterceptor implements HandlerInterceptor {
                 throw new MyException(ExceptionEnum.TOKEN_NEED_REFRESH);
             } catch (SignatureVerificationException | JWTDecodeException e) {
                 //无效的token
-                log.info("token=" + token + "无效 错误token");
-                log.info("解密Token中的公共信息出现JWTDecodeException异常:" + e.getMessage());
+                log.info("token解析异常，token={}",token,e);
                 throw new MyException(ExceptionEnum.INVALID_TOKEN);
             } catch (TokenExpiredException e) {
-                log.info("token=" + token + "过期");
+                log.info("token已失效，token={}",token);
                 throw new MyException(ExceptionEnum.TOKEN_EXPIRED);
             } catch (AlgorithmMismatchException e) {
-                log.info("token=" + token + "算法不一致");
-                throw new MyException(ExceptionEnum.SYSTEM_INTERNAL_ERROR);
-            } catch (Exception e) {
-                e.printStackTrace();
-                log.info("token=" + token + "解析token异常");
+                log.info("token算法有误，token={}",token);
                 throw new MyException(ExceptionEnum.SYSTEM_INTERNAL_ERROR);
             }
         }

@@ -1,8 +1,7 @@
 package com.szht.service;
 
+import com.github.pagehelper.PageInfo;
 import com.szht.entity.User;
-
-import java.util.List;
 
 public interface UserService {
     User queryUserByYgbh(String ygbh) throws Exception;
@@ -14,7 +13,7 @@ public interface UserService {
      * @return
      * @throws Exception
      */
-    List<User> getAllUsers(int pageIndex,int pageSize) throws Exception;
+    PageInfo<User> getAllUsers(int pageIndex, int pageSize) throws Exception;
 
     User queryUserByYgbhAndYgmm(String ygbh,String ygmm) throws Exception;
 }

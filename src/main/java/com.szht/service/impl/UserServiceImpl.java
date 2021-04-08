@@ -20,11 +20,11 @@ public class UserServiceImpl implements UserService {
         return userMapper.queryUserByYgbh(ygbh);
     }
 
-    public List<User> getAllUsers(int pageIndex,int pageSize) throws Exception {
+    public PageInfo<User> getAllUsers(int pageIndex,int pageSize) throws Exception {
         PageHelper.startPage(pageIndex, pageSize);
         List<User> userList = userMapper.getAllUsers();
         PageInfo<User> userPageInfo = new PageInfo<>(userList);
-        return userList;
+        return userPageInfo;
     }
 
     public User queryUserByYgbhAndYgmm(String ygbh, String ygmm) throws Exception {

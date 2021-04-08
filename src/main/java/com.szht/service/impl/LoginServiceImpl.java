@@ -61,11 +61,11 @@ public class LoginServiceImpl implements LoginService {
         usergMap.put("ygbh", user2.getYgbh());
         usergMap.put("ygmc", user2.getYgmc());
         //从redis取出token
-        String token = (String) redisUtil.get("uap_ygbh" + user2.getYgbh());
+        String token = (String) redisUtil.get("uap_ygbh_" + user2.getYgbh());
         if(token == null){
             token = jwtUtil.getToken(usergMap);
             log.info("token生成成功，ygbh={}，token={}",user2.getYgbh(),token);
-            redisUtil.set("uap_ygbh" + user2.getYgbh(), token,expire);
+            redisUtil.set("uap_ygbh_" + user2.getYgbh(), token,expire);
         }
         //如果redis的token不为空
         response.setHeader("token", token);
